@@ -5,6 +5,7 @@
  */
 package autoattendance;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
@@ -21,26 +22,25 @@ public class AutoAttendance {
     public static void main(String[] args) {
         Registrar registrar = new Registrar();
         FileScanner in, rosterIn;
+        File zoomFile, rosterFile;
 
         try {
-            in = registrar.openFile(Registrar.LAST_ZOOM_FOLDER);
-            if (in != null)
-            {
-                registrar.readZoomFile(in);
-                registrar.bubbleSortFullNameList();
-                registrar.removeDuplicates();
-                registrar.dumpFullNameList(); // Temp
-                registrar.fillAndParseNameRecordList();
-                registrar.bubbleSortNameRecordList();
-                in.getMyScanner().close();
-                rosterIn = registrar.openFile(Registrar.LAST_ROSTER_FOLDER);
-                if (rosterIn != null)
-                {
-                    registrar.readCompareFile(rosterIn);
-                    registrar.listAbsentAndNewStudents();
-                    rosterIn.getMyScanner().close();
-                }
-            }
+            zoomFile = registrar.openFile(Registrar.LAST_ZOOM_FOLDER);
+            in = new FileScanner(zoomFile);
+            
+            registrar.readZoomFile(in);
+            registrar.bubbleSortFullNameList();
+            registrar.removeDuplicates();
+            registrar.dumpFullNameList(); // Temp
+            registrar.fillAndParseNameRecordList();
+            registrar.bubbleSortNameRecordList();
+            in.getMyScanner().close();
+
+            rosterFile = registrar.openFile(Registrar.LAST_ZOOM_FOLDER);
+            rosterIn = new FileScanner(rosterFile);
+            registrar.readCompareFile(rosterIn);
+            registrar.listAbsentAndNewStudents();
+            rosterIn.getMyScanner().close();
         }
         catch (FileNotFoundException ex)
         {

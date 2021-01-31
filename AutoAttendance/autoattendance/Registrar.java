@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import javax.swing.JFileChooser;
 import java.util.prefs.Preferences;
 
@@ -35,11 +34,9 @@ public static final String LAST_ROSTER_FOLDER = "LastRosterFolder";
         myPrefs = Preferences.userRoot().node(this.getClass().getName());
     }
     
-    public FileScanner openFile(String lastFolder) throws FileNotFoundException
+    public File openFile(String lastFolder)
     {
-        FileScanner returnValue = null;
-        
-        File file;
+        File file = null;
         
         JFileChooser chooser = new JFileChooser(myPrefs.get(
                 lastFolder, new File(".").getAbsolutePath()));
@@ -48,14 +45,10 @@ public static final String LAST_ROSTER_FOLDER = "LastRosterFolder";
         
         if (response == JFileChooser.APPROVE_OPTION)
         {
-            myPrefs.put(lastFolder, chooser.getSelectedFile().getParent());
-            
             file = chooser.getSelectedFile();
-        
-            returnValue = new FileScanner(file);
+            myPrefs.put(lastFolder, file.getParent());
         }
-        
-        return returnValue;
+        return file;
     }
            
     public void readZoomFile(FileScanner in) throws Exception
@@ -305,6 +298,4 @@ public static final String LAST_ROSTER_FOLDER = "LastRosterFolder";
     private final ArrayList<NameRecord> zoomNameRecordList;
     private final ArrayList<NameRecord> rosterNameRecordList;
     private Preferences myPrefs;
-    private File zoomFile;
-    private File rosterFile;
 }

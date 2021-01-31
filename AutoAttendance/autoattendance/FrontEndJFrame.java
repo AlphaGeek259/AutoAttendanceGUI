@@ -5,8 +5,10 @@
  */
 package autoattendance;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import javax.swing.JOptionPane;
+
+
 
 /**
  *
@@ -99,6 +101,11 @@ public class FrontEndJFrame extends javax.swing.JFrame {
 
         btnCompare.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         btnCompare.setText("Compare");
+        btnCompare.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCompareActionPerformed(evt);
+            }
+        });
 
         btnExit.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         btnExit.setText("Exit");
@@ -193,44 +200,42 @@ public class FrontEndJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnZoomReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZoomReportActionPerformed
-        try {
-            myZoomIn = myRegistrar.openFile(Registrar.LAST_ZOOM_FOLDER);
-            if (myZoomIn != null)
-            {
-                txtZoomFilePath.setText(myZoomIn.getMyFile().getPath());
-                myRegistrar.readZoomFile(myZoomIn);
-            }
-        }
-        catch (FileNotFoundException ex)
+        zoomFile = myRegistrar.openFile(Registrar.LAST_ZOOM_FOLDER);
+        if (zoomFile != null)
         {
-            JOptionPane.showMessageDialog(null, 
-                "Could not open user's selected Zoom file.");
-        }
-        catch (Exception ex)
-        {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
+            txtZoomFilePath.setText(zoomFile.getPath());
         }
     }//GEN-LAST:event_btnZoomReportActionPerformed
 
     private void btnSynergyReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSynergyReportActionPerformed
-        try {
-            myRosterIn = myRegistrar.openFile(Registrar.LAST_ROSTER_FOLDER);
-            if (myRosterIn != null)
-            {
-                txtRosterFilePath.setText(myRosterIn.getMyFile().getPath());
-                myRegistrar.readCompareFile(myRosterIn);
-            }
-        }
-        catch (FileNotFoundException ex)
+        rosterFile = myRegistrar.openFile(Registrar.LAST_ROSTER_FOLDER);
+        if (rosterFile != null)
         {
-            JOptionPane.showMessageDialog(null, 
-                "Could not open user's selected Roster file.");
+            txtRosterFilePath.setText(rosterFile.getPath());
+        }
+    }//GEN-LAST:event_btnSynergyReportActionPerformed
+
+    private void btnCompareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompareActionPerformed
+        try {
+            FileScanner zoomIn = new FileScanner(zoomFile);
+
+            myRegistrar.readZoomFile(zoomIn);
+            myRegistrar.bubbleSortFullNameList();
+            myRegistrar.removeDuplicates();
+            myRegistrar.dumpFullNameList(); // Temp
+            myRegistrar.fillAndParseNameRecordList();
+            myRegistrar.bubbleSortNameRecordList();
+            zoomIn.getMyScanner().close();
+            FileScanner rosterIn = new FileScanner(rosterFile);
+            myRegistrar.readCompareFile(rosterIn);
+            myRegistrar.listAbsentAndNewStudents();
+            rosterIn.getMyScanner().close();
         }
         catch (Exception ex)
         {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-    }//GEN-LAST:event_btnSynergyReportActionPerformed
+    }//GEN-LAST:event_btnCompareActionPerformed
 
     /**
      * @param args the command line arguments
@@ -262,14 +267,15 @@ public class FrontEndJFrame extends javax.swing.JFrame {
        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new FrontEndJFrame().setVisible(true);
             }
         });
     }
     
-    private Registrar myRegistrar;
-    private FileScanner myZoomIn, myRosterIn;
+    private final Registrar myRegistrar;
+    private File zoomFile, rosterFile;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCompare;
