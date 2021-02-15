@@ -29,6 +29,8 @@ public static final String LAST_ROSTER_FOLDER = "LastRosterFolder";
         fullNameList = new ArrayList<>();
         zoomNameRecordList = new ArrayList<>();    
         rosterNameRecordList = new ArrayList<>();
+        missingStudents = new ArrayList<>();
+        newStudents = new ArrayList<>();
         
         // Get user's preferences or create one if none exist
         myPrefs = Preferences.userRoot().node(this.getClass().getName());
@@ -253,9 +255,6 @@ public static final String LAST_ROSTER_FOLDER = "LastRosterFolder";
     
     public void listAbsentAndNewStudents()
     {
-        ArrayList <NameRecord> missingStudents = new ArrayList<>();
-        ArrayList <NameRecord> newStudents = new ArrayList<>();
-        
         for (int i = 0; i < rosterNameRecordList.size(); i++)
         {
             if ( !isMatching(rosterNameRecordList.get(i)))
@@ -297,5 +296,21 @@ public static final String LAST_ROSTER_FOLDER = "LastRosterFolder";
     private final ArrayList<String> fullNameList;
     private final ArrayList<NameRecord> zoomNameRecordList;
     private final ArrayList<NameRecord> rosterNameRecordList;
+    private ArrayList <NameRecord> missingStudents;
+    private ArrayList <NameRecord> newStudents;
     private Preferences myPrefs;
+
+    /**
+     * @return the missingStudents
+     */
+    public ArrayList <NameRecord> getMissingStudents() {
+        return missingStudents;
+    }
+
+    /**
+     * @return the newStudents
+     */
+    public ArrayList <NameRecord> getNewStudents() {
+        return newStudents;
+    }
 }

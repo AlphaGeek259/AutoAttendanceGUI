@@ -6,6 +6,7 @@
 package autoattendance;
 
 import java.io.File;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 
@@ -78,26 +79,16 @@ public class FrontEndJFrame extends javax.swing.JFrame {
         txtRosterFilePath.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel2.setText("Missing Students");
+        jLabel2.setText("Missing Synergy Students");
 
         lstMissing.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lstMissing.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(lstMissing);
 
         lstUnfamiliar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lstUnfamiliar.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane2.setViewportView(lstUnfamiliar);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel3.setText("Unfamiliar Students");
+        jLabel3.setText("Unfamiliar Zoom Students");
 
         btnCompare.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         btnCompare.setText("Compare");
@@ -169,10 +160,10 @@ public class FrontEndJFrame extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCompare, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -229,6 +220,7 @@ public class FrontEndJFrame extends javax.swing.JFrame {
             FileScanner rosterIn = new FileScanner(rosterFile);
             myRegistrar.readCompareFile(rosterIn);
             myRegistrar.listAbsentAndNewStudents();
+            populateListBoxes();
             rosterIn.getMyScanner().close();
         }
         catch (Exception ex)
@@ -237,6 +229,28 @@ public class FrontEndJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCompareActionPerformed
 
+    private void populateListBoxes()
+    {
+        // Note: You cannot add items to listboxes directly. You have to create 
+        // something called a list model and then set the model of the listbox
+        // to the newly created list model. Keep a reference to the interior 
+        // list model and then add stuff to the list model. ugh
+        
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        lstMissing.setModel(listModel);
+        for (int i = 0; i < myRegistrar.getMissingStudents().size(); i++)
+        {
+            listModel.addElement(myRegistrar.getMissingStudents().get(i).getFullName());
+        }
+
+        listModel = new DefaultListModel<>();
+        this.lstUnfamiliar.setModel(listModel);
+        for (int i = 0; i < myRegistrar.getNewStudents().size(); i++)
+        {
+            listModel.addElement(myRegistrar.getNewStudents().get(i).getFullName());
+        }        
+    }
+    
     /**
      * @param args the command line arguments
      */
